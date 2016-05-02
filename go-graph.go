@@ -23,7 +23,7 @@ func main() {
 	}
 	connection := repository.NewDbConnection()
 	if *migration == "update" {
-		db.MigrationUpdate(connection)
+		db.MigrationUpdate(connection,"./db/migrations")
 	}
 	sqlRepository := repository.NewSqlRepository(connection)
 	sqlRepository.SaveUser("Testuser")

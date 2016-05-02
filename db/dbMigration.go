@@ -5,8 +5,8 @@ import (
 	"database/sql"
 )
 
-func MigrationUpdate(db *sql.DB) {
-	migrator, err := gomigrate.NewMigrator(db, gomigrate.Sqlite3{}, "./db/migrations")
+func MigrationUpdate(db *sql.DB, migrationPath string) {
+	migrator, err := gomigrate.NewMigrator(db, gomigrate.Sqlite3{}, migrationPath)
 	if err != nil {
 		panic("Migration setup failed")
 	}

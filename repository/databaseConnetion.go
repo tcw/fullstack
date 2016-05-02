@@ -11,7 +11,7 @@ func NewDbConnection() *sql.DB {
 }
 
 func NewMemoryDbConnection() *sql.DB {
-	db, err := sql.Open("sqlite3", ":memory")
+	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
 		panic("Could not open database connection")
 	}
