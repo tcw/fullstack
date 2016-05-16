@@ -8,6 +8,9 @@ import (
 	"runtime/pprof"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"github.com/tcw/go-graph/db"
+	"github.com/codegangsta/negroni"
+	"net/http"
+	"github.com/tcw/go-graph/web"
 )
 
 var (
@@ -25,8 +28,17 @@ func main() {
 	if *migration == "update" {
 		db.MigrationUpdate(connection,"./db/migrations")
 	}
-	sqlRepository := repository.NewSqlRepository(connection)
-	sqlRepository.SaveUser("Testuser")
+
+	mux := http.NewServeMux()
+
+	sqlRepository := repository.NewUserRepository(connection)
+	userRepository := web.NewUserRepository(sqlRepository)
+	mux.Handle("/add", userRepository.AddUserHandler("someuser"))
+
+	n := negroni.Classic() // Includes some default middlewares
+	n.UseHandler(mux)
+
+	http.ListenAndServe(":3000", n)
 }
 
 func startProfiling() {

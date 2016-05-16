@@ -5,19 +5,19 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type Repository interface {
+type UserRepository interface {
 	SaveUser(username string) sql.Result
 }
 
-type SqlRepository struct {
+type UserDbRepository struct {
 	db *sql.DB
 }
 
-func NewSqlRepository(sqlDb *sql.DB)  SqlRepository{
-	return SqlRepository{sqlDb}
+func NewUserRepository(sqlDb *sql.DB) UserDbRepository {
+	return UserDbRepository{sqlDb}
 }
 
-func (sr SqlRepository) SaveUser(username string) sql.Result {
+func (sr UserDbRepository) SaveUser(username string) sql.Result {
 	tx, err := sr.db.Begin()
 	if err != nil {
 		panic(err.Error())
@@ -28,13 +28,10 @@ func (sr SqlRepository) SaveUser(username string) sql.Result {
 	}
 	defer stmt.Close()
 	var res sql.Result
-	for i := 0; i < 1000; i++ {
-		res, err = stmt.Exec(username)
-		if err != nil {
-			panic("Could not execute insert")
-		}
+	res, err = stmt.Exec(username)
+	if err != nil {
+		panic("Could not execute insert")
 	}
 	tx.Commit()
-
 	return res;
 }

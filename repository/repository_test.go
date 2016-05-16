@@ -7,7 +7,7 @@ import (
 
 func TestSaveUser(t *testing.T) {
 	connection := NewMemoryDbConnection()
-	repository := NewSqlRepository(connection)
+	repository := NewUserRepository(connection)
 	db.MigrationUpdate(connection,"../db/migrations")
 	repository.SaveUser("test")
 }
