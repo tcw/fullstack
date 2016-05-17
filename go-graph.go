@@ -11,6 +11,7 @@ import (
 	"github.com/codegangsta/negroni"
 	"net/http"
 	"github.com/tcw/go-graph/web"
+	"github.com/gorilla/mux"
 )
 
 var (
@@ -29,13 +30,15 @@ func main() {
 		db.MigrationUpdate(connection,"./db/migrations")
 	}
 
-	mux := http.NewServeMux()
-
+	mux := mux.NewRouter()
 	sqlRepository := repository.NewUserRepository(connection)
-	userRepository := web.NewUserRepository(sqlRepository)
-	mux.Handle("/add", userRepository.AddUserHandler("someuser"))
+	userRepository := web.NewUserWeb(sqlRepository)
 
-	n := negroni.Classic() // Includes some default middlewares
+	mux.Handle("/add/{username}/{lastname}", userRepository.AddUserHandler())
+	mux.Handle("/find/{username}", userRepository.GetUserHandler())
+
+	n := negroni.New(negroni.NewStatic(http.Dir("web/static")),
+		negroni.NewRecovery())
 	n.UseHandler(mux)
 
 	http.ListenAndServe(":3000", n)

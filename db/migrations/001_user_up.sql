@@ -1,4 +1,5 @@
-CREATE TABLE `userinfo` (
-    `uid` INTEGER PRIMARY KEY AUTOINCREMENT,
-    `username` VARCHAR(64) NULL
+CREATE TABLE userinfo (
+    uid INTEGER PRIMARY KEY AUTOINCREMENT,
+    username VARCHAR(64) NULL,
+    lastname VARCHAR(100) NULL
 );
