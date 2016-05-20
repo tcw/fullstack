@@ -5,6 +5,8 @@ import (
 	"github.com/tcw/go-graph/repository"
 	"github.com/unrolled/render"
 	"github.com/gorilla/mux"
+	"encoding/json"
+	"fmt"
 )
 
 type UserWeb struct {
@@ -12,14 +14,28 @@ type UserWeb struct {
 	render *render.Render
 }
 
+type ErrorResponse struct {
+	httpStatus int32
+	message    string
+	context    map[string]string
+}
+
 func NewUserWeb(userRepo repository.UserRepository) UserWeb {
-	return UserWeb{userRepo,render.New()}
+	return UserWeb{userRepo, render.New()}
 }
 
 func (uw UserWeb) AddUserHandler() http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		uw.userDb.SaveUser(repository.User{Username:vars["username"],Lastname:vars["lastname"]})
+		decoder := json.NewDecoder(r.Body)
+		var user repository.User
+		err := decoder.Decode(&user)
+		if err != nil {
+			errorMessage := fmt.Sprintf("Error decoding json %s", r.Body)
+			uw.render.JSON(w, http.StatusInternalServerError, ErrorResponse{httpStatus:500, message:errorMessage})
+		}else{
+			uw.userDb.SaveUser(user)
+			uw.render.JSON(w, http.StatusCreated,nil)
+		}
 	}
 	return http.HandlerFunc(fn)
 }

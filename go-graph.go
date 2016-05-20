@@ -16,42 +16,47 @@ import (
 
 var (
 	migration = kingpin.Flag("migrate", "Migraion command (update)").Short('m').Default("").String()
-	profile = kingpin.Flag("profile", "Starts profiling").Short('p').Default("false").Bool()
+	cpuProfile = kingpin.Flag("profile", "Starts profiling").Short('c').Default("false").Bool()
+	port = kingpin.Flag("port", "web application port").Short('p').Default("3000").Int32()
 )
 
 func main() {
 	kingpin.Version("0.0.1")
 	kingpin.Parse()
-	if *profile {
-		startProfiling()
+
+	//Cpu profiling
+	//cmd:'go tool pprof go-graph cpu.pprof'
+	if *cpuProfile {
+		f, err := os.Create("cpu.pprof")
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		fmt.Println("Run 'go tool pprof go-graph cpu.pprof' to watch profile")
+		fmt.Println("Profile is being written to 'cpu.pprof' ...")
+		defer pprof.StopCPUProfile()
 	}
+
+	//Database migrations
 	connection := repository.NewDbConnection()
 	if *migration == "update" {
 		db.MigrationUpdate(connection,"./db/migrations")
 	}
 
-	mux := mux.NewRouter()
+	//Web server
+	router := mux.NewRouter()
 	sqlRepository := repository.NewUserRepository(connection)
 	userRepository := web.NewUserWeb(sqlRepository)
 
-	mux.Handle("/add/{username}/{lastname}", userRepository.AddUserHandler())
-	mux.Handle("/find/{username}", userRepository.GetUserHandler())
+	router.Handle("/add", userRepository.AddUserHandler()).Methods("POST")
+	router.Handle("/find/{username}", userRepository.GetUserHandler()).Methods("GET")
 
-	n := negroni.New(negroni.NewStatic(http.Dir("web/static")),
-		negroni.NewRecovery())
-	n.UseHandler(mux)
+	n := negroni.New(
+		negroni.NewStatic(http.Dir("web/static")),
+		negroni.NewRecovery(),
+		negroni.NewLogger())
+	n.UseHandler(router)
 
-	http.ListenAndServe(":3000", n)
+	http.ListenAndServe(":" + *port, n)
 }
 
-func startProfiling() {
-	//go tool pprof go-graph cpu.pprof
-	f, err := os.Create("cpu.pprof")
-	if err != nil {
-		log.Fatal(err)
-	}
-	pprof.StartCPUProfile(f)
-	fmt.Println("Run 'go tool pprof go-graph cpu.pprof' to watch profile")
-	fmt.Println("Profile is being written to 'cpu.pprof' ...")
-	defer pprof.StopCPUProfile()
-}
