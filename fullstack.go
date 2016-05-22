@@ -1,17 +1,17 @@
 package main
 
 import (
-	"github.com/tcw/go-graph/repository"
 	"os"
 	"log"
 	"fmt"
 	"runtime/pprof"
 	"gopkg.in/alecthomas/kingpin.v2"
-	"github.com/tcw/go-graph/db"
 	"github.com/codegangsta/negroni"
 	"net/http"
-	"github.com/tcw/go-graph/web"
 	"github.com/gorilla/mux"
+	"github.com/tcw/fullstack/repository"
+	"github.com/tcw/fullstack/db"
+	"github.com/tcw/fullstack/web"
 )
 
 var (
