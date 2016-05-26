@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
+	"github.com/tcw/fullstack/domain"
 )
 
 type UserRepository interface {
-	SaveUser(user User) sql.Result
-	GetUser(username string) User
+	SaveUser(user domain.User) sql.Result
+	GetUser(username string) domain.User
 }
 
 type UserDbRepository struct {
@@ -19,13 +20,9 @@ func NewUserRepository(sqlDb *sql.DB) UserDbRepository {
 	return UserDbRepository{sqlDb}
 }
 
-type User struct {
-	Uid      int64
-	Username string
-	Lastname string
-}
 
-func (sr UserDbRepository) SaveUser(user User) sql.Result {
+
+func (sr UserDbRepository) SaveUser(user domain.User) sql.Result {
 	tx, err := sr.db.Begin()
 	if err != nil {
 		panic(err.Error())
@@ -44,7 +41,7 @@ func (sr UserDbRepository) SaveUser(user User) sql.Result {
 	return res;
 }
 
-func (sr UserDbRepository) GetUser(username string) User {
+func (sr UserDbRepository) GetUser(username string) domain.User {
 	var uid int64
 	var uname string
 	var lastname string
@@ -63,5 +60,5 @@ func (sr UserDbRepository) GetUser(username string) User {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return User{uid,uname,lastname};
+	return domain.User{uid,uname,lastname};
 }

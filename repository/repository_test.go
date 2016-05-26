@@ -4,6 +4,7 @@ import (
 	"testing"
 	"github.com/tcw/fullstack/db"
 	"database/sql"
+	"github.com/tcw/fullstack/domain"
 )
 
 var (
@@ -18,11 +19,11 @@ func init() {
 }
 
 func TestSaveUser(t *testing.T) {
-	userRepo.SaveUser(User{Username:"test1", Lastname:"test2"})
+	userRepo.SaveUser(domain.User{Username:"test1", Lastname:"test2"})
 }
 
 func TestGetUser(t *testing.T) {
-	userRepo.SaveUser(User{Username:"test", Lastname:"testesen"})
+	userRepo.SaveUser(domain.User{Username:"test", Lastname:"testesen"})
 	user := userRepo.GetUser("test")
 	if user.Lastname != "testesen" {
 		t.Fatal("Couldn't get lastname")

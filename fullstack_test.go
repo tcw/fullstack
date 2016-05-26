@@ -12,6 +12,7 @@ import (
 	"net"
 	"os"
 	"strconv"
+	"github.com/tcw/fullstack/domain"
 )
 
 var (
@@ -32,8 +33,8 @@ func TestMain(m *testing.M){
 	os.Exit(m.Run())
 }
 
-func Test(t *testing.T) {
-	user := repository.User{0, "my", "mylast"}
+func TestAddingUserToWebService(t *testing.T) {
+	user := domain.User{0, "my", "mylast"}
 	buser, _ := json.Marshal(user)
 	resp, err := http.Post("http://localhost:" + testport + "/add", "application/json", bytes.NewReader(buser))
 	if err != nil {

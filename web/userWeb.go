@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/tcw/fullstack/repository"
+	"github.com/tcw/fullstack/domain"
 )
 
 var serializer *render.Render = render.New()
@@ -28,7 +29,7 @@ func NewUserWeb(userRepo repository.UserRepository) UserWeb {
 func (uw UserWeb) AddUserHandler() http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
-		var user repository.User
+		var user domain.User
 		err := decoder.Decode(&user)
 		if err != nil {
 			errorMessage := fmt.Sprintf("Error decoding json %s", r.Body)
