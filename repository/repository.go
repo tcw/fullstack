@@ -20,8 +20,6 @@ func NewUserRepository(sqlDb *sql.DB) UserDbRepository {
 	return UserDbRepository{sqlDb}
 }
 
-
-
 func (sr UserDbRepository) SaveUser(user domain.User) sql.Result {
 	tx, err := sr.db.Begin()
 	if err != nil {

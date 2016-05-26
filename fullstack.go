@@ -45,11 +45,11 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
-	n := setupWebService(connection)
+	n := setupRestService(connection)
 	manners.ListenAndServe(":"+ *port, n)
 }
 
-func setupWebService(conn *sql.DB) *negroni.Negroni {
+func setupRestService(conn *sql.DB) *negroni.Negroni {
 	//Web server
 	router := mux.NewRouter()
 	sqlRepository := repository.NewUserRepository(conn)
