@@ -20,6 +20,11 @@
 			"Rev": "2efee857e7cfd4f3d0138cc3cbb1b4966962b93a"
 		},
 		{
+			"ImportPath": "github.com/braintree/manners",
+			"Comment": "0.4.0-15-g82a8879",
+			"Rev": "82a8879fc5fd0381fa8b2d8033b19bf255252088"
+		},
+		{
 			"ImportPath": "github.com/codegangsta/negroni",
 			"Comment": "v0.2.0-22-gdc45282",
 			"Rev": "dc45282b3653ee198a3c06a82bc7847b03666497"
