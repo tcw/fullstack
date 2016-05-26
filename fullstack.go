@@ -20,6 +20,8 @@ var (
 	migration = kingpin.Flag("migrate", "Migraion command (update)").Short('m').Default("").String()
 	cpuProfile = kingpin.Flag("profile", "Starts profiling").Short('c').Default("false").Bool()
 	port = kingpin.Flag("port", "web application port").Short('p').Default("3000").String()
+	memorydb = kingpin.Flag("memorydb", "web application port").Short('d').Default("false").Bool()
+	dbfile = kingpin.Flag("dbfile", "web application port").Short('f').Default("./fullstack.db").String()
 )
 
 func main() {
@@ -27,7 +29,13 @@ func main() {
 	kingpin.Parse()
 
 	//Database migrations
-	connection := repository.NewDbConnection()
+	var connection *sql.DB
+	if *memorydb {
+		connection= repository.NewMemoryDbConnection()
+	}else {
+		connection= repository.NewDbConnection(*dbfile)
+	}
+
 	if *migration == "update" {
 		db.MigrationUpdate(connection,"./db/migrations")
 	}

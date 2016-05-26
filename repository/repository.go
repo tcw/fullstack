@@ -9,7 +9,7 @@ import (
 
 type UserRepository interface {
 	SaveUser(user domain.User) sql.Result
-	GetUser(username string) domain.User
+	GetUser(username string) domain.UserList
 }
 
 type UserDbRepository struct {
@@ -39,7 +39,7 @@ func (sr UserDbRepository) SaveUser(user domain.User) sql.Result {
 	return res;
 }
 
-func (sr UserDbRepository) GetUser(username string) domain.User {
+func (sr UserDbRepository) GetUser(username string) domain.UserList {
 	var uid int64
 	var uname string
 	var lastname string
@@ -48,8 +48,10 @@ func (sr UserDbRepository) GetUser(username string) domain.User {
 		log.Fatal(err)
 	}
 	defer rows.Close()
+	var users []domain.User
 	for rows.Next() {
 		err := rows.Scan(&uid,&uname,&lastname)
+		users = append(users,domain.User{uid,uname,lastname})
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -58,5 +60,5 @@ func (sr UserDbRepository) GetUser(username string) domain.User {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return domain.User{uid,uname,lastname};
+	return domain.UserList{users}
 }

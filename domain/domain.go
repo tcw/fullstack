@@ -5,3 +5,7 @@ type User struct {
 	Username string
 	Lastname string
 }
+
+type UserList struct {
+	Users []User
+}

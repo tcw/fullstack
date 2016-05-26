@@ -46,8 +46,12 @@ func (uw UserWeb) GetUserHandler() http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		username := vars["username"]
-		user := uw.userDb.GetUser(username)
-		serializer.JSON(w, http.StatusOK, user)
+		users := uw.userDb.GetUser(username)
+		if len(users.Users) > 0 {
+			serializer.JSON(w, http.StatusOK, users)
+		}else {
+			serializer.JSON(w, http.StatusOK, nil)
+		}
 	}
 	return http.HandlerFunc(fn)
 }

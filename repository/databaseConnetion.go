@@ -2,8 +2,8 @@ package repository
 
 import "database/sql"
 
-func NewDbConnection() *sql.DB {
-	db, err := sql.Open("sqlite3", "./fullstack.db")
+func NewDbConnection(file string) *sql.DB {
+	db, err := sql.Open("sqlite3", file)
 	if err != nil {
 		panic("Could not open database connection")
 	}

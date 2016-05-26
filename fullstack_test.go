@@ -23,6 +23,7 @@ var (
 
 func TestMain(m *testing.M) {
 	connection = repository.NewMemoryDbConnection()
+	//connection = repository.NewDbConnection("./test.db")
 	db.MigrationUpdate(connection, "db/migrations")
 	service := setupRestService(connection)
 	listener, err := net.Listen("tcp", ":0")
@@ -67,22 +68,29 @@ func TestFindingUserWithRestService(t *testing.T) {
 		t.Fail()
 	}
 	decoder := json.NewDecoder(resp.Body)
-	var userRes domain.User
+	var userRes domain.UserList
 	err = decoder.Decode(&userRes)
-	if err != nil || userRes.Lastname != "mylast2" {
+	if err != nil || userRes.Users[0].Lastname != "mylast2" {
 		t.Fail()
 	}
 }
 
 func BenchmarkAddUser(b *testing.B) {
-	b.Log("Starting benchmark")
 	user := domain.User{0, "my2", "mylast2"}
 	buser, _ := json.Marshal(user)
 	for i := 0; i < b.N; i++ {
 		_, err := http.Post("http://localhost:" + testport + "/add", "application/json", bytes.NewReader(buser))
 		if err != nil {
-			b.Error(err)
+			b.Fatal(err)
 		}
 	}
 }
 
+func BenchmarkFindUser(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ , err := http.Get("http://localhost:" + testport + "/find/my")
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
