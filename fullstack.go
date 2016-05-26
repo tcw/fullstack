@@ -45,12 +45,12 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
+	//Web server
 	n := setupRestService(connection)
 	manners.ListenAndServe(":"+ *port, n)
 }
 
 func setupRestService(conn *sql.DB) *negroni.Negroni {
-	//Web server
 	router := mux.NewRouter()
 	sqlRepository := repository.NewUserRepository(conn)
 	userRepository := web.NewUserWeb(sqlRepository)
@@ -60,8 +60,7 @@ func setupRestService(conn *sql.DB) *negroni.Negroni {
 
 	n := negroni.New(
 		negroni.NewStatic(http.Dir("web/static")),
-		negroni.NewRecovery(),
-		negroni.NewLogger())
+		negroni.NewRecovery())
 	n.UseHandler(router)
 	return n
 }

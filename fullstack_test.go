@@ -36,7 +36,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func addUser(user domain.User) error{
+func addUser(user domain.User) error {
 	buser, _ := json.Marshal(user)
 	resp, err := http.Post("http://localhost:" + testport + "/add", "application/json", bytes.NewReader(buser))
 	if err != nil {
@@ -51,7 +51,7 @@ func addUser(user domain.User) error{
 func TestAddingUserToRestService(t *testing.T) {
 	user := domain.User{0, "my", "mylast"}
 	err := addUser(user)
-	if err != nil{
+	if err != nil {
 		t.Fatal(err)
 	}
 }
@@ -68,9 +68,21 @@ func TestFindingUserWithRestService(t *testing.T) {
 	}
 	decoder := json.NewDecoder(resp.Body)
 	var userRes domain.User
-	 err  = decoder.Decode(&userRes)
+	err = decoder.Decode(&userRes)
 	if err != nil || userRes.Lastname != "mylast2" {
 		t.Fail()
+	}
+}
+
+func BenchmarkAddUser(b *testing.B) {
+	b.Log("Starting benchmark")
+	user := domain.User{0, "my2", "mylast2"}
+	buser, _ := json.Marshal(user)
+	for i := 0; i < b.N; i++ {
+		_, err := http.Post("http://localhost:" + testport + "/add", "application/json", bytes.NewReader(buser))
+		if err != nil {
+			b.Error(err)
+		}
 	}
 }
 
