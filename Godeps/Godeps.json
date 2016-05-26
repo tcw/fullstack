@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/tcw/go-graph",
+	"ImportPath": "github.com/tcw/fullstack",
 	"GoVersion": "go1.6",
 	"GodepVersion": "v62",
 	"Deps": [

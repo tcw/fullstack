@@ -2,7 +2,7 @@ package repository
 
 import (
 	"testing"
-	"github.com/tcw/go-graph/db"
+	"github.com/tcw/fullstack/db"
 	"database/sql"
 )
 

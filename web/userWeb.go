@@ -2,16 +2,17 @@ package web
 
 import (
 	"net/http"
-	"github.com/tcw/go-graph/repository"
 	"github.com/unrolled/render"
 	"github.com/gorilla/mux"
 	"encoding/json"
 	"fmt"
+	"github.com/tcw/fullstack/repository"
 )
+
+var serializer *render.Render = render.New()
 
 type UserWeb struct {
 	userDb repository.UserRepository
-	render *render.Render
 }
 
 type ErrorResponse struct {
@@ -21,7 +22,7 @@ type ErrorResponse struct {
 }
 
 func NewUserWeb(userRepo repository.UserRepository) UserWeb {
-	return UserWeb{userRepo, render.New()}
+	return UserWeb{userRepo}
 }
 
 func (uw UserWeb) AddUserHandler() http.Handler {
@@ -31,10 +32,10 @@ func (uw UserWeb) AddUserHandler() http.Handler {
 		err := decoder.Decode(&user)
 		if err != nil {
 			errorMessage := fmt.Sprintf("Error decoding json %s", r.Body)
-			uw.render.JSON(w, http.StatusInternalServerError, ErrorResponse{httpStatus:500, message:errorMessage})
+			serializer.JSON(w, http.StatusInternalServerError, ErrorResponse{httpStatus:500, message:errorMessage})
 		}else{
 			uw.userDb.SaveUser(user)
-			uw.render.JSON(w, http.StatusCreated,nil)
+			serializer.JSON(w, http.StatusCreated,nil)
 		}
 	}
 	return http.HandlerFunc(fn)
@@ -45,7 +46,7 @@ func (uw UserWeb) GetUserHandler() http.Handler {
 		vars := mux.Vars(r)
 		username := vars["username"]
 		user := uw.userDb.GetUser(username)
-		uw.render.JSON(w, http.StatusOK, user)
+		serializer.JSON(w, http.StatusOK, user)
 	}
 	return http.HandlerFunc(fn)
 }

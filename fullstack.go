@@ -12,17 +12,25 @@ import (
 	"github.com/tcw/fullstack/repository"
 	"github.com/tcw/fullstack/db"
 	"github.com/tcw/fullstack/web"
+	"database/sql"
+	"github.com/braintree/manners"
 )
 
 var (
 	migration = kingpin.Flag("migrate", "Migraion command (update)").Short('m').Default("").String()
 	cpuProfile = kingpin.Flag("profile", "Starts profiling").Short('c').Default("false").Bool()
-	port = kingpin.Flag("port", "web application port").Short('p').Default("3000").Int32()
+	port = kingpin.Flag("port", "web application port").Short('p').Default("3000").String()
 )
 
 func main() {
 	kingpin.Version("0.0.1")
 	kingpin.Parse()
+
+	//Database migrations
+	connection := repository.NewDbConnection()
+	if *migration == "update" {
+		db.MigrationUpdate(connection,"./db/migrations")
+	}
 
 	//Cpu profiling
 	//cmd:'go tool pprof go-graph cpu.pprof'
@@ -37,15 +45,14 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
-	//Database migrations
-	connection := repository.NewDbConnection()
-	if *migration == "update" {
-		db.MigrationUpdate(connection,"./db/migrations")
-	}
+	n := setupWebService(connection)
+	manners.ListenAndServe(":"+ *port, n)
+}
 
+func setupWebService(conn *sql.DB) *negroni.Negroni {
 	//Web server
 	router := mux.NewRouter()
-	sqlRepository := repository.NewUserRepository(connection)
+	sqlRepository := repository.NewUserRepository(conn)
 	userRepository := web.NewUserWeb(sqlRepository)
 
 	router.Handle("/add", userRepository.AddUserHandler()).Methods("POST")
@@ -56,7 +63,6 @@ func main() {
 		negroni.NewRecovery(),
 		negroni.NewLogger())
 	n.UseHandler(router)
-
-	http.ListenAndServe(":" + *port, n)
+	return n
 }
 
