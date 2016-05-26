@@ -87,8 +87,13 @@ func BenchmarkAddUser(b *testing.B) {
 }
 
 func BenchmarkFindUser(b *testing.B) {
+	user := domain.User{0, "my3", "mylast3"}
+	err := addUser(user)
+	if err != nil {
+		b.Fatal(err)
+	}
 	for i := 0; i < b.N; i++ {
-		_ , err := http.Get("http://localhost:" + testport + "/find/my")
+		_ , err := http.Get("http://localhost:" + testport + "/find/my3")
 		if err != nil {
 			b.Fatal(err)
 		}
