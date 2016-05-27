@@ -17,11 +17,11 @@ import (
 )
 
 var (
-	migrationUpdate = kingpin.Flag("migrate", "Migraion command").Short('u').Default("true").Bool()
-	cpuProfile = kingpin.Flag("profile", "Starts profiling").Short('c').Default("false").Bool()
-	port = kingpin.Flag("port", "web application port").Short('p').Default("3000").String()
-	memorydb = kingpin.Flag("memorydb", "web application port").Short('m').Default("false").Bool()
-	dbfile = kingpin.Flag("dbfile", "web application port").Short('f').Default("./fullstack.db").String()
+	skipMigration = kingpin.Flag("skip-migration", "Skip migration update").Short('s').Default("false").Bool()
+	cpuProfile = kingpin.Flag("profile", "Start cpu profiling").Short('c').Default("false").Bool()
+	port = kingpin.Flag("port", "Web application port").Short('p').Default("3000").String()
+	memorydb = kingpin.Flag("memorydb", "Use in memory database").Short('m').Default("false").Bool()
+	dbfile = kingpin.Flag("dbfile", "Database file").Short('f').Default("./fullstack.db").String()
 )
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 		connection= repository.NewDbConnection(*dbfile)
 	}
 
-	if *migrationUpdate {
+	if !*skipMigration {
 		db.MigrationUpdate(connection,"./db/migrations")
 	}
 

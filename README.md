@@ -3,6 +3,7 @@
 
 ## Contains
 
+* Dependency manangement with vendor : Godeps
 * Sql database: Sqlite3
 * Database migration : gomigrate
 * Json rest service : Negroni, render
