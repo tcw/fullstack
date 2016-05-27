@@ -13,7 +13,7 @@ import (
 	"os"
 	"strconv"
 	"github.com/tcw/fullstack/domain"
-	"github.com/syndtr/goleveldb/leveldb/errors"
+	"errors"
 )
 
 var (
@@ -68,9 +68,9 @@ func TestFindingUserWithRestService(t *testing.T) {
 		t.Fail()
 	}
 	decoder := json.NewDecoder(resp.Body)
-	var userRes domain.UserList
+	var userRes []domain.User
 	err = decoder.Decode(&userRes)
-	if err != nil || userRes.Users[0].Lastname != "mylast2" {
+	if err != nil || userRes[0].Lastname != "mylast2" {
 		t.Fail()
 	}
 }

@@ -26,10 +26,10 @@ func TestGetUser(t *testing.T) {
 	userRepo.SaveUser(domain.User{Username:"test", Lastname:"testesen"})
 	userRepo.SaveUser(domain.User{Username:"test", Lastname:"testesen3"})
 	user := userRepo.GetUser("test")
-	if len(user.Users) != 2 {
+	if len(user) != 2 {
 		t.Fail()
 	}
-	if user.Users[0].Lastname != "testesen" {
+	if user[0].Lastname != "testesen" {
 		t.Fatal("Couldn't get lastname")
 	}
 }

@@ -9,7 +9,7 @@ import (
 
 type UserRepository interface {
 	SaveUser(user domain.User) sql.Result
-	GetUser(username string) domain.UserList
+	GetUser(username string) []domain.User
 }
 
 type UserDbRepository struct {
@@ -39,7 +39,7 @@ func (sr UserDbRepository) SaveUser(user domain.User) sql.Result {
 	return res;
 }
 
-func (sr UserDbRepository) GetUser(username string) domain.UserList {
+func (sr UserDbRepository) GetUser(username string) []domain.User {
 	var uid int64
 	var uname string
 	var lastname string
@@ -60,5 +60,5 @@ func (sr UserDbRepository) GetUser(username string) domain.UserList {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return domain.UserList{users}
+	return users
 }

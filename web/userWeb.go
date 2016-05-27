@@ -47,7 +47,7 @@ func (uw UserWeb) GetUserHandler() http.Handler {
 		vars := mux.Vars(r)
 		username := vars["username"]
 		users := uw.userDb.GetUser(username)
-		if len(users.Users) > 0 {
+		if len(users) > 0 {
 			serializer.JSON(w, http.StatusOK, users)
 		}else {
 			serializer.JSON(w, http.StatusOK, nil)

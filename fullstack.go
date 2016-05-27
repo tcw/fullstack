@@ -17,10 +17,10 @@ import (
 )
 
 var (
-	migration = kingpin.Flag("migrate", "Migraion command (update)").Short('m').Default("").String()
+	migrationUpdate = kingpin.Flag("migrate", "Migraion command").Short('u').Default("true").Bool()
 	cpuProfile = kingpin.Flag("profile", "Starts profiling").Short('c').Default("false").Bool()
 	port = kingpin.Flag("port", "web application port").Short('p').Default("3000").String()
-	memorydb = kingpin.Flag("memorydb", "web application port").Short('d').Default("false").Bool()
+	memorydb = kingpin.Flag("memorydb", "web application port").Short('m').Default("false").Bool()
 	dbfile = kingpin.Flag("dbfile", "web application port").Short('f').Default("./fullstack.db").String()
 )
 
@@ -36,7 +36,7 @@ func main() {
 		connection= repository.NewDbConnection(*dbfile)
 	}
 
-	if *migration == "update" {
+	if *migrationUpdate {
 		db.MigrationUpdate(connection,"./db/migrations")
 	}
 
@@ -48,7 +48,7 @@ func main() {
 			log.Fatal(err)
 		}
 		pprof.StartCPUProfile(f)
-		fmt.Println("Run 'go tool pprof go-graph cpu.pprof' to watch profile")
+		fmt.Println("Run 'go tool pprof fullstack cpu.pprof' to watch profile")
 		fmt.Println("Profile is being written to 'cpu.pprof' ...")
 		defer pprof.StopCPUProfile()
 	}
