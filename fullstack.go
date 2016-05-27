@@ -22,6 +22,7 @@ var (
 	port = kingpin.Flag("port", "Web application port").Short('p').Default("3000").String()
 	memorydb = kingpin.Flag("memorydb", "Use in memory database").Short('m').Default("false").Bool()
 	dbfile = kingpin.Flag("dbfile", "Database file").Short('f').Default("./fullstack.db").String()
+	requestlogging = kingpin.Flag("reqlog", "Turn on request logging").Short('l').Default("false").Bool()
 )
 
 func main() {
@@ -31,13 +32,13 @@ func main() {
 	//Database migrations
 	var connection *sql.DB
 	if *memorydb {
-		connection= repository.NewMemoryDbConnection()
-	}else {
-		connection= repository.NewDbConnection(*dbfile)
+		connection = repository.NewMemoryDbConnection()
+	} else {
+		connection = repository.NewDbConnection(*dbfile)
 	}
 
 	if !*skipMigration {
-		db.MigrationUpdate(connection,"./db/migrations")
+		db.MigrationUpdate(connection, "./db/migrations")
 	}
 
 	//Cpu profiling
@@ -55,7 +56,10 @@ func main() {
 
 	//Web server
 	n := setupRestService(connection)
-	manners.ListenAndServe(":"+ *port, n)
+	if *requestlogging {
+		n.Use(negroni.NewLogger())
+	}
+	manners.ListenAndServe(":" + *port, n)
 }
 
 func setupRestService(conn *sql.DB) *negroni.Negroni {
@@ -69,6 +73,7 @@ func setupRestService(conn *sql.DB) *negroni.Negroni {
 	n := negroni.New(
 		negroni.NewStatic(http.Dir("web/static")),
 		negroni.NewRecovery())
+
 	n.UseHandler(router)
 	return n
 }
