@@ -25,13 +25,13 @@ func (sr UserDbRepository) SaveUser(user domain.User) sql.Result {
 	if err != nil {
 		panic(err.Error())
 	}
-	stmt, err := tx.Prepare("INSERT INTO userinfo(username,lastname) values(?,?)")
+	stmt, err := tx.Prepare("INSERT INTO userinfo(firstname,lastname) values(?,?)")
 	if err != nil {
 		panic(err.Error())
 	}
 	defer stmt.Close()
 	var res sql.Result
-	res, err = stmt.Exec(user.Username, user.Lastname)
+	res, err = stmt.Exec(user.Firstname, user.Lastname)
 	if err != nil {
 		panic("Could not execute insert")
 	}
@@ -39,19 +39,19 @@ func (sr UserDbRepository) SaveUser(user domain.User) sql.Result {
 	return res
 }
 
-func (sr UserDbRepository) GetUser(username string) []domain.User {
+func (sr UserDbRepository) GetUser(firstname string) []domain.User {
 	var uid int64
-	var uname string
+	var fname string
 	var lastname string
-	rows, err := sr.db.Query("select uid,username,lastname from userinfo where username = ?", username)
+	rows, err := sr.db.Query("select uid,firstname,lastname from userinfo where firstname = ?", firstname)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
 	var users []domain.User
 	for rows.Next() {
-		err := rows.Scan(&uid, &uname, &lastname)
-		users = append(users, domain.User{uid, uname, lastname})
+		err := rows.Scan(&uid, &fname, &lastname)
+		users = append(users, domain.User{uid, fname, lastname})
 		if err != nil {
 			log.Fatal(err)
 		}

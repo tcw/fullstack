@@ -1,5 +1,5 @@
 CREATE TABLE userinfo (
     uid INTEGER PRIMARY KEY AUTOINCREMENT,
-    username VARCHAR(64) NULL,
+    firstname VARCHAR(100) NULL,
     lastname VARCHAR(100) NULL
 );

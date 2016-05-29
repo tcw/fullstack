@@ -19,12 +19,12 @@ func init() {
 }
 
 func TestSaveUser(t *testing.T) {
-	userRepo.SaveUser(domain.User{Username: "test1", Lastname: "test2"})
+	userRepo.SaveUser(domain.User{Firstname: "test1", Lastname: "test2"})
 }
 
 func TestGetUser(t *testing.T) {
-	userRepo.SaveUser(domain.User{Username: "test", Lastname: "testesen"})
-	userRepo.SaveUser(domain.User{Username: "test", Lastname: "testesen3"})
+	userRepo.SaveUser(domain.User{Firstname: "test", Lastname: "testesen"})
+	userRepo.SaveUser(domain.User{Firstname: "test", Lastname: "testesen3"})
 	user := userRepo.GetUser("test")
 	if len(user) != 2 {
 		t.Fail()
