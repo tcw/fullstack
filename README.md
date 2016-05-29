@@ -9,18 +9,20 @@ A minimal example of a Go rest service for the real world.
 *  Database migration (gomigrate)
 *  Json rest service (Negroni, render)
 *  Static http file server (Negroni)
-*  Graceful http server shutdown (manners)
+*  TLS and Http2
 
 Flags:
 
-        --help                     Show context-sensitive help (also try--help-long and --help-man).
     -s, --skip-migration           Skip migration update
-    -c, --profile                  Start cpu profiling
-    -p, --port="3000"              Web application port
-    -m, --memorydb                 Use in memory database
+    -z, --profile                  Start cpu profiling
+    -m, --memorydb                 Use in-memory database
     -f, --dbfile="./fullstack.db"  Database file
     -l, --reqlog                   Turn on request logging
-        --version                  Show application version
+    -p, --http="3000"              Web application port
+    -t, --https="3001"             Secure web application port
+    -k, --key="tls/key.pem"        Private Key
+    -c, --cert="tls/cert.pem"      Public Key
+        --version                  Show application version.
 
 Post User to service
 
@@ -29,3 +31,8 @@ Post User to service
 Get User from service
 
     curl localhost:3000/find/test
+
+
+Used following command to create key and cert:
+
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout key.pem -out cert.pem

@@ -13,16 +13,18 @@ import (
 	"github.com/tcw/fullstack/db"
 	"github.com/tcw/fullstack/web"
 	"database/sql"
-	"github.com/braintree/manners"
 )
 
 var (
 	skipMigration = kingpin.Flag("skip-migration", "Skip migration update").Short('s').Default("false").Bool()
-	cpuProfile = kingpin.Flag("profile", "Start cpu profiling").Short('c').Default("false").Bool()
-	port = kingpin.Flag("port", "Web application port").Short('p').Default("3000").String()
-	memorydb = kingpin.Flag("memorydb", "Use in memory database").Short('m').Default("false").Bool()
+	cpuProfile = kingpin.Flag("profile", "Start cpu profiling").Short('z').Default("false").Bool()
+	memorydb = kingpin.Flag("memorydb", "Use in-memory database").Short('m').Default("false").Bool()
 	dbfile = kingpin.Flag("dbfile", "Database file").Short('f').Default("./fullstack.db").String()
 	requestlogging = kingpin.Flag("reqlog", "Turn on request logging").Short('l').Default("false").Bool()
+	httpPort = kingpin.Flag("http", "Http port").Short('p').Default("3000").String()
+	httpsPort = kingpin.Flag("https", "Https port").Short('t').Default("3001").String()
+	tlsKey = kingpin.Flag("key", "Tls Private Key (key)").Short('k').Default("tls/key.pem").String()
+	tlsCert = kingpin.Flag("cert", "Tls Public Key (cert)").Short('c').Default("tls/cert.pem").String()
 )
 
 func main() {
@@ -59,7 +61,16 @@ func main() {
 	if *requestlogging {
 		n.Use(negroni.NewLogger())
 	}
-	manners.ListenAndServe(":" + *port, n)
+
+	log.Printf("Serving https from port: %s\n", *httpsPort)
+	go func() {
+		err := http.ListenAndServeTLS(":" + *httpsPort, *tlsCert, *tlsKey, n)
+		if err != nil {
+			log.Fatal("Https web server:",err)
+		}
+	}()
+	log.Printf("Serving http from port: %s\n", *httpPort)
+	log.Fatal("Http web server:",http.ListenAndServe(":" + *httpPort, n))
 }
 
 func setupRestService(conn *sql.DB) *negroni.Negroni {
