@@ -1,13 +1,13 @@
 package web
 
 import (
-	"net/http"
-	"github.com/unrolled/render"
-	"github.com/gorilla/mux"
 	"encoding/json"
 	"fmt"
-	"github.com/tcw/fullstack/repository"
+	"github.com/gorilla/mux"
 	"github.com/tcw/fullstack/domain"
+	"github.com/tcw/fullstack/repository"
+	"github.com/unrolled/render"
+	"net/http"
 )
 
 var serializer *render.Render = render.New()
@@ -33,10 +33,10 @@ func (uw UserWeb) AddUserHandler() http.Handler {
 		err := decoder.Decode(&user)
 		if err != nil {
 			errorMessage := fmt.Sprintf("Error decoding json %s", r.Body)
-			serializer.JSON(w, http.StatusInternalServerError, ErrorResponse{httpStatus:500, message:errorMessage})
-		}else{
+			serializer.JSON(w, http.StatusInternalServerError, ErrorResponse{httpStatus: 500, message: errorMessage})
+		} else {
 			uw.userDb.SaveUser(user)
-			serializer.JSON(w, http.StatusCreated,nil)
+			serializer.JSON(w, http.StatusCreated, nil)
 		}
 	}
 	return http.HandlerFunc(fn)
@@ -49,7 +49,7 @@ func (uw UserWeb) GetUserHandler() http.Handler {
 		users := uw.userDb.GetUser(username)
 		if len(users) > 0 {
 			serializer.JSON(w, http.StatusOK, users)
-		}else {
+		} else {
 			serializer.JSON(w, http.StatusOK, nil)
 		}
 	}

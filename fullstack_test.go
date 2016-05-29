@@ -1,24 +1,24 @@
 package main
 
 import (
-	"testing"
-	"github.com/tcw/fullstack/repository"
-	"database/sql"
-	"github.com/tcw/fullstack/db"
-	"github.com/braintree/manners"
-	"net/http"
-	"encoding/json"
 	"bytes"
+	"database/sql"
+	"encoding/json"
+	"errors"
+	"github.com/braintree/manners"
+	"github.com/tcw/fullstack/db"
+	"github.com/tcw/fullstack/domain"
+	"github.com/tcw/fullstack/repository"
 	"net"
+	"net/http"
 	"os"
 	"strconv"
-	"github.com/tcw/fullstack/domain"
-	"errors"
+	"testing"
 )
 
 var (
 	connection *sql.DB
-	testport string
+	testport   string
 )
 
 func TestMain(m *testing.M) {
@@ -39,7 +39,7 @@ func TestMain(m *testing.M) {
 
 func addUser(user domain.User) error {
 	buser, _ := json.Marshal(user)
-	resp, err := http.Post("http://localhost:" + testport + "/add", "application/json", bytes.NewReader(buser))
+	resp, err := http.Post("http://localhost:"+testport+"/add", "application/json", bytes.NewReader(buser))
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func BenchmarkAddUser(b *testing.B) {
 	user := domain.User{0, "my2", "mylast2"}
 	buser, _ := json.Marshal(user)
 	for i := 0; i < b.N; i++ {
-		_, err := http.Post("http://localhost:" + testport + "/add", "application/json", bytes.NewReader(buser))
+		_, err := http.Post("http://localhost:"+testport+"/add", "application/json", bytes.NewReader(buser))
 		if err != nil {
 			b.Fatal(err)
 		}
@@ -93,7 +93,7 @@ func BenchmarkFindUser(b *testing.B) {
 		b.Fatal(err)
 	}
 	for i := 0; i < b.N; i++ {
-		_ , err := http.Get("http://localhost:" + testport + "/find/my3")
+		_, err := http.Get("http://localhost:" + testport + "/find/my3")
 		if err != nil {
 			b.Fatal(err)
 		}

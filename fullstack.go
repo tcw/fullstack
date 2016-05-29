@@ -1,18 +1,18 @@
 package main
 
 import (
-	"os"
-	"log"
-	"fmt"
-	"runtime/pprof"
-	"gopkg.in/alecthomas/kingpin.v2"
-	"github.com/codegangsta/negroni"
-	"net/http"
-	"github.com/gorilla/mux"
-	"github.com/tcw/fullstack/repository"
-	"github.com/tcw/fullstack/db"
-	"github.com/tcw/fullstack/web"
 	"database/sql"
+	"fmt"
+	"github.com/codegangsta/negroni"
+	"github.com/gorilla/mux"
+	"github.com/tcw/fullstack/db"
+	"github.com/tcw/fullstack/repository"
+	"github.com/tcw/fullstack/web"
+	"gopkg.in/alecthomas/kingpin.v2"
+	"log"
+	"net/http"
+	"os"
+	"runtime/pprof"
 )
 
 var (
@@ -21,6 +21,7 @@ var (
 	memorydb = kingpin.Flag("memorydb", "Use in-memory database").Short('m').Default("false").Bool()
 	dbfile = kingpin.Flag("dbfile", "Database file").Short('f').Default("./fullstack.db").String()
 	requestlogging = kingpin.Flag("reqlog", "Turn on request logging").Short('l').Default("false").Bool()
+	siteRootHttps = kingpin.Flag("site-rooot", "Https site root").Short('r').Default("https://localhost:3001").String()
 	httpPort = kingpin.Flag("http", "Http port").Short('p').Default("3000").String()
 	httpsPort = kingpin.Flag("https", "Https port").Short('t').Default("3001").String()
 	tlsKey = kingpin.Flag("key", "Tls Private Key (key)").Short('k').Default("tls/key.pem").String()
@@ -66,11 +67,13 @@ func main() {
 	go func() {
 		err := http.ListenAndServeTLS(":" + *httpsPort, *tlsCert, *tlsKey, n)
 		if err != nil {
-			log.Fatal("Https web server:",err)
+			log.Fatal("Https web server:", err)
 		}
 	}()
-	log.Printf("Serving http from port: %s\n", *httpPort)
-	log.Fatal("Http web server:",http.ListenAndServe(":" + *httpPort, n))
+	log.Printf("Serving http redirect from port: %s\n", *httpPort)
+	log.Fatal("Http redirct web server:",
+		http.ListenAndServe(":" + *httpPort,
+			http.RedirectHandler(*siteRootHttps, http.StatusMovedPermanently)))
 }
 
 func setupRestService(conn *sql.DB) *negroni.Negroni {
@@ -88,4 +91,3 @@ func setupRestService(conn *sql.DB) *negroni.Negroni {
 	n.UseHandler(router)
 	return n
 }
-

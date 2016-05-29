@@ -1,8 +1,8 @@
 package db
 
 import (
-	"github.com/DavidHuie/gomigrate"
 	"database/sql"
+	"github.com/DavidHuie/gomigrate"
 )
 
 func MigrationUpdate(db *sql.DB, migrationPath string) {
