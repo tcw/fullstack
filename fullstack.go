@@ -31,7 +31,7 @@ var (
 )
 
 func main() {
-	kingpin.Version(getVersion())
+	kingpin.Version(GetVersion())
 	kingpin.Parse()
 
 	//Database migrations

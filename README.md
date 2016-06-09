@@ -21,8 +21,7 @@ Run example project:
 
     go get -u github.com/tools/godep
     cd $GOPATH/src/github.com/tcw/fullstack
-    godep save
-    go build ./...
+    godep go build
     ./fullstack
 
 Flags:
@@ -45,14 +44,12 @@ Flags:
 
 Post User to service (start with 'fullstack -u')
 
-    curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "{\"Username\":\"test\",\"Lastname\":\"tester\"}" http://localhost:3000/add
+    curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "{\"Firstname\":\"test\",\"Lastname\":\"tester\"}" http://localhost:3000/add
 
 Get User from service (start with 'fullstack -u')
 
+    curl localhost:3000/find/test
 
-    curl --cacert cert.pem localhost:3001/find/test
-
-
-Used following command to create key and cert:
+Key and cert in the tls folder was generated using:
 
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout key.pem -out cert.pem
