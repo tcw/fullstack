@@ -21,7 +21,7 @@ Run example project:
 
     go get -u github.com/tools/godep
     cd $GOPATH/src/github.com/tcw/fullstack
-    godep go build
+    go build
     ./fullstack
 
 Flags:
